@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>NewFlex M-Pesa Sandbox</title>
+</head>
+<body>
+  <h1>NewFlex M-Pesa Sandbox STK Push</h1>
+  <form id="paymentForm">
+    <label for="phone">Phone Number (2547XXXXXXXX):</label><br />
+    <input type="text" id="phone" name="phone" required /><br />
+    <label for="amount">Amount (KES):</label><br />
+    <input type="number" id="amount" name="amount" required min="1" /><br /><br />
+    <button type="submit">Pay Now</button>
+  </form>
+  <div id="result"></div>
+
+  <script>
+    const form = document.getElementById('paymentForm');
+    const resultDiv = document.getElementById('result');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const phone = document.getElementById('phone').value;
+      const amount = document.getElementById('amount').value;
+
+      try {
+        const res = await fetch('/stkpush', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ phone, amount })
+        });
+        const data = await res.json();
+        if (res.ok) {
+          resultDiv.textContent = 'STK Push initiated. Check your phone.';
+        } else {
+          resultDiv.textContent = 'Error: ' + (data.error || 'Unknown error');
+        }
+      } catch (err) {
+        resultDiv.textContent = 'Network error: ' + err.message;
+      }
+    });
+  </script>
+</body>
+</html>
